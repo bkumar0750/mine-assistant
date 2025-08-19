@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MineBoat - Mining Assistant</title>
+    <style>
+        :root {
+            --primary-color: #1a5276;
+            --secondary-color: #7e5109;
+            --accent-color: #f39c12;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #e67e22;
+            --danger-color: #e74c3c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), 
+                              url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23bdc3c7' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 3px solid var(--accent-color);
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            margin-left: 10px;
+        }
+        
+        .header-icon {
+            font-size: 1.8rem;
+        }
+        
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+        
+        .bot-message {
+            justify-content: flex-start;
+        }
+        
+        .user-message {
+            justify-content: flex-end;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            position: relative;
+        }
+        
+        .bot-message .message-content {
+            background-color: #e3e3e3;
+            border-top-left-radius: 4px;
+        }
+        
+        .user-message .message-content {
+            background-color: var(--primary-color);
+            color: white;
+            border-top-right-radius: 4px;
+        }
+        
+        .timestamp {
+            font-size: 0.7rem;
+            margin-top: 5px;
+            opacity: 0.7;
+        }
+        
+        .input-container {
+            display: flex;
+            padding: 15px;
+            background-color: white;
+            border-top: 1px solid #eee;
+        }
+        
+        #user-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            font-size: 1rem;
+        }
+        
+        #send-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+        
+        #send-button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .suggestion-chips {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px 15px;
+            background-color: white;
+            border-top: 1px solid #eee;
+        }
+        
+        .chip {
+            background-color: #e3e3e3;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+        
+        .chip:hover {
+            background-color: #d0d0d0;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                height: 90vh;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-icon">⛏️🚢</div>
+            <h1>MineBoat Assistant</h1>
+        </div>
+        
+        <div class="chat-container" id="chat-container">
+            <div class="message bot-message">
+                <div class="message-content">
+                    <p>Ahoy, miner! Welcome to MineBoat, your mining assistant. How can I help you today?</p>
+                    <div class="timestamp">Just now</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="suggestion-chips" id="suggestion-chips">
+            <div class="chip" data-message="Safety procedures">Safety procedures</div>
+            <div class="chip" data-message="Equipment maintenance">Equipment maintenance</div>
+            <div class="chip" data-message="Extraction techniques">Extraction techniques</div>
+            <div class="chip" data-message="Regulations">Regulations</div>
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off">
+            <button id="send-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatContainer = document.getElementById('chat-container');
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            const suggestionChips = document.getElementById('suggestion-chips');
+            
+            // Rule-based response system
+            const responseRules = [
+                {
+                    keywords: ['hello', 'hi', 'hey', 'greetings', 'ahoy'],
+                    response: "Ahoy there! How can I assist with your mining operations today?",
+                    context: 'greeting'
+                },
+                {
+                    keywords: ['bye', 'goodbye', 'see you', 'farewell'],
+                    response: "Fair winds and following seas! Stay safe out there in the mines.",
+                    context: 'farewell'
+                },
+                {
+                    keywords: ['safety', 'safe', 'protection', 'helmet', 'vest'],
+                    response: "Safety is paramount in mining operations. Always wear your PPE including hard hat, safety glasses, high-visibility clothing, and steel-toed boots. Remember to conduct pre-shift inspections and be aware of your surroundings at all times.",
+                    context: 'safety'
+                },
+                {
+                    keywords: ['equipment', 'machine', 'tool', 'drill', 'excavator', 'loader'],
+                    response: "Mining equipment requires regular maintenance. Check fluid levels, inspect for wear and damage, and ensure all safety guards are in place before operation. Report any malfunctions immediately to your supervisor.",
+                    context: 'equipment'
+                },
+                {
+                    keywords: ['extraction', 'dig', 'mine', 'ore', 'mineral', 'resource'],
+                    response: "Extraction techniques vary based on the mineral and mine type. For surface mining, we use open-pit or strip mining. For underground, methods include room-and-pillar or longwall mining. Always follow the extraction plan designed by our engineers.",
+                    context: 'extraction'
+                },
+                {
+                    keywords: ['regulation', 'law', 'compliance', 'standard', 'msha'],
+                    response: "Mining operations must comply with MSHA regulations. This includes regular safety training, environmental protections, proper documentation, and equipment certifications. Need specific regulation information?",
+                    context: 'regulations'
+                },
+                {
+                    keywords: ['schedule', 'shift', 'time', 'hours', 'work'],
+                    response: "Standard shifts are 8-12 hours depending on the operation. Most mines operate 24/7 with rotating shifts. Check with your supervisor for the current schedule and any changes.",
+                    context: 'schedule'
+                },
+                {
+                    keywords: ['emergency', 'accident', 'incident', 'hurt', 'injured'],
+                    response: "In case of emergency, follow these steps: 1) Ensure your immediate safety 2) Alert others in the area 3) Contact emergency services and supervisor 4) Provide first aid if trained 5) Evacuate if necessary. Do you need immediate assistance?",
+                    context: 'emergency'
+                },
+                {
+                    keywords: ['transport', 'haul', 'truck', 'move', 'ship'],
+                    response: "Material transport follows designated haul roads. Trucks should maintain safe speeds and distances. Loads must be properly secured. Always complete pre-trip inspections and be aware of blind spots.",
+                    context: 'transport'
+                },
+                {
+                    keywords: ['thanks', 'thank you', 'appreciate', 'helpful'],
+                    response: "You're welcome! Always happy to help with your mining questions. Stay safe out there!",
+                    context: 'gratitude'
+                }
+            ];
+            
+            // Default response if no keywords match
+            const defaultResponses = [
+                "I'm not sure I understand. Could you rephrase that?",
+                "That's outside my mining expertise. Try asking about safety, equipment, or regulations.",
+                "I don't have information on that specific topic. Could you ask about something related to mining operations?",
+                "As a mining assistant, I'm best with questions about mining equipment, safety, or procedures."
+            ];
+            
+            // Add message to chat
+            function addMessage(message, isUser) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+                messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+                
+                const messageContent = document.createElement('div');
+                messageContent.classList.add('message-content');
+                
+                const messageText = document.createElement('p');
+                messageText.textContent = message;
+                
+                const timestamp = document.createElement('div');
+                timestamp.classList.add('timestamp');
+                timestamp.textContent = new Date().toLocaleTimeString();
+                
+                messageContent.appendChild(messageText);
+                messageContent.appendChild(timestamp);
+                messageDiv.appendChild(messageContent);
+                
+                chatContainer.appendChild(messageDiv);
+                
+                // Scroll to bottom
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            // Get response based on user input
+            function getResponse(input) {
+                input = input.toLowerCase();
+                
+                // Check for matches in response rules
+                for (const rule of responseRules) {
+                    for (const keyword of rule.keywords) {
+                        if (input.includes(keyword)) {
+                            return rule.response;
+                        }
+                    }
+                }
+                
+                // If no match, return a random default response
+                return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+            }
+            
+            // Handle user message
+            function handleUserMessage() {
+                const message = userInput.value.trim();
+                
+                if (message) {
+                    addMessage(message, true);
+                    userInput.value = '';
+                    
+                    // Simulate typing delay
+                    setTimeout(() => {
+                        const response = getResponse(message);
+                        addMessage(response, false);
+                    }, 1000);
+                }
+            }
+            
+            // Event listeners
+            sendButton.addEventListener('click', handleUserMessage);
+            
+            userInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleUserMessage();
+                }
+            });
+            
+            // Suggestion chips
+            suggestionChips.addEventListener('click', (e) => {
+                if (e.target.classList.contains('chip')) {
+                    const message = e.target.getAttribute('data-message');
+                    userInput.value = message;
+                    handleUserMessage();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
